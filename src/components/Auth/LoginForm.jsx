@@ -26,7 +26,7 @@ const LoginForm = () => {
     setLoading(true);
     try {
       const response = await apiClient.post('/auth/login', values);
-      const { accessToken, refreshToken, user } = response.data;
+      const { accessToken, refreshToken, user } = response.data.data;
       
       // Save to Zustand store (and localStorage via middleware)
       setAuth(user || { email: values.email }, accessToken, refreshToken);
