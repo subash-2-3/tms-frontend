@@ -30,8 +30,8 @@ const CompanyPage = () => {
       <Group justify="space-between" mb="xl">
         <Title order={2}>Company</Title>
         {activeTab === 'list' && (
-          <Button 
-            leftSection={<IconPlus size={18} />} 
+          <Button
+            leftSection={<IconPlus size={18} />}
             onClick={handleCreateNew}
           >
             Add New Company
@@ -56,6 +56,7 @@ const CompanyPage = () => {
 
           <Tabs.Panel value="form" p="md">
             <CompanyForm
+              key={editingCompany ? editingCompany.id : 'create'}
               initialData={editingCompany}
               onSuccess={handleFormSuccess}
             />

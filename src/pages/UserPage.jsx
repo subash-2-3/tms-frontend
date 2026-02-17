@@ -31,8 +31,8 @@ const UserPage = () => {
       <Group justify="space-between" mb="xl">
         <Title order={2}>User</Title>
         {activeTab === 'list' && (
-          <Button 
-            leftSection={<IconUserPlus size={18} />} 
+          <Button
+            leftSection={<IconUserPlus size={18} />}
             onClick={handleCreateNew}
           >
             Create New User
@@ -60,6 +60,7 @@ const UserPage = () => {
           {/* Create/Edit Form Panel */}
           <Tabs.Panel value="form" p="md">
             <UserForm
+              key={editingUser ? editingUser.id : 'create'}
               initialData={editingUser}
               onSuccess={handleFormSuccess}
             />

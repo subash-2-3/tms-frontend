@@ -3,9 +3,23 @@ import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { useUsers, useDeleteUser } from '../../../hooks/useUser';
 import { notifications } from '@mantine/notifications';
 
+import { BASE_URL } from '../../../services/api';
+
+const getImageUrl = (path) => {
+  if (!path) return null;
+  const strPath = String(path).trim();
+  if (strPath.startsWith('data:')) {
+    return strPath.replace(/\s/g, '');
+  }
+  if (strPath.startsWith('http') || strPath.startsWith('blob:')) return strPath;
+  const relativePath = strPath.startsWith('/') ? strPath.slice(1) : strPath;
+  return `${BASE_URL}/${relativePath}`;
+};
+
 const UserTable = ({ onEdit }) => {
   const { data: users, isLoading, error } = useUsers();
   const deleteUser = useDeleteUser();
+
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to deactivate this user?')) {
@@ -39,7 +53,7 @@ const UserTable = ({ onEdit }) => {
             <Table.Th>Company</Table.Th>
             <Table.Th>Role</Table.Th>
             <Table.Th>Status</Table.Th>
-            <Table.Th textAlign="right">Actions</Table.Th>
+            <Table.Th ta="right">Actions</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
@@ -47,7 +61,7 @@ const UserTable = ({ onEdit }) => {
             <Table.Tr key={user.id}>
               <Table.Td>
                 <Group gap="sm">
-                  <Avatar src={user.profile_image} radius="xl" />
+                  <Avatar src={getImageUrl(user.profile_image)} radius="xl" />
                   <Text size="sm" fw={500}>{user.name}</Text>
                 </Group>
               </Table.Td>
@@ -72,9 +86,9 @@ const UserTable = ({ onEdit }) => {
                   <ActionIcon variant="subtle" color="blue" onClick={() => onEdit(user)}>
                     <IconEdit size={18} />
                   </ActionIcon>
-                  <ActionIcon 
-                    variant="subtle" 
-                    color="red" 
+                  <ActionIcon
+                    variant="subtle"
+                    color="red"
                     onClick={() => handleDelete(user.id)}
                     loading={deleteUser.isPending}
                   >

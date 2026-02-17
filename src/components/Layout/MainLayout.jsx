@@ -1,11 +1,12 @@
 import { AppShell, Burger, Group, NavLink, Text, Button, Stack, Box } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { 
-  IconDashboard, 
-  IconBuildingCommunity, 
-  IconUsers, 
-  IconUserShield, 
-  IconLogout 
+import {
+  IconDashboard,
+  IconBuildingCommunity,
+  IconUsers,
+  IconUserShield,
+  IconLogout,
+  IconBriefcase
 } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
@@ -22,6 +23,7 @@ const MainLayout = ({ children }) => {
     { icon: IconBuildingCommunity, label: 'Companies', path: '/companies' },
     { icon: IconUsers, label: 'Users', path: '/users' },
     { icon: IconUserShield, label: 'Roles', path: '/roles' },
+    { icon: IconBriefcase, label: 'Projects', path: '/projects' },
   ];
 
   const handleLogout = () => {
@@ -48,11 +50,11 @@ const MainLayout = ({ children }) => {
               TMS Admin
             </Text>
           </Group>
-          
-          <Button 
-            variant="light" 
-            color="red" 
-            leftSection={<IconLogout size={16} />} 
+
+          <Button
+            variant="light"
+            color="red"
+            leftSection={<IconLogout size={16} />}
             onClick={handleLogout}
           >
             Logout
@@ -78,10 +80,10 @@ const MainLayout = ({ children }) => {
             />
           ))}
         </Stack>
-        
+
         {/* Footer area of Sidebar */}
         <Box mt="auto" pt="md" style={{ borderTop: '1px solid #eee' }}>
-          <Text size="xs" c="dimmed" textAlign="center">
+          <Text size="xs" c="dimmed" ta="center">
             TMS v1.0.0 © 2026
           </Text>
         </Box>

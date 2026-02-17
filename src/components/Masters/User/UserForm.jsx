@@ -12,21 +12,51 @@ import {
   Grid, // <--- Add this
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useState } from 'react';
-import { useCreateUser, useUpdateUser } from '../../../hooks/useUser';
+import { useState, useEffect } from 'react';
+import { useCreateUser, useUpdateUser, useUserById } from '../../../hooks/useUser';
 import { useCompanies } from '../../../hooks/useCompany';
 import { useRoles } from '../../../hooks/useRole';
 import { notifications } from '@mantine/notifications';
 
+import { BASE_URL } from '../../../services/api';
+
+const getImageUrl = (path) => {
+  if (!path) return null;
+  const strPath = String(path).trim();
+  if (strPath.startsWith('data:')) {
+    return strPath.replace(/\s/g, '');
+  }
+  if (strPath.startsWith('http') || strPath.startsWith('blob:')) return strPath;
+  const relativePath = strPath.startsWith('/') ? strPath.slice(1) : strPath;
+  return `${BASE_URL}/${relativePath}`;
+};
+
 const UserForm = ({ initialData = null, onSuccess }) => {
-  const [imagePreview, setImagePreview] = useState(initialData?.profile_image || null);
-  
+  const [imagePreview, setImagePreview] = useState(getImageUrl(initialData?.profile_image));
+
   // Fetch data for dropdowns
   const { data: companies, isLoading: loadingCompanies } = useCompanies();
   const { data: roles, isLoading: loadingRoles } = useRoles();
-  
+
+  // Fetch detailed user data if editing
+  const { data: userDetails, isLoading: loadingUser } = useUserById(initialData?.id);
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
+
+  // Sync form with detailed user data when fetched
+  useEffect(() => {
+    if (userDetails) {
+      form.setValues({
+        company_id: userDetails.company_id?.toString() || '',
+        role_id: userDetails.role_id?.toString() || '',
+        name: userDetails.name || '',
+        email: userDetails.email || '',
+        profile_image: null, // Keep null as file input handles new files only
+      });
+      // Update image preview separately
+      setImagePreview(getImageUrl(userDetails.profile_image));
+    }
+  }, [userDetails]);
 
   // Transform data for Mantine Select components
   const companyOptions = companies?.map((c) => ({ value: String(c.id), label: c.name })) || [];
@@ -46,7 +76,7 @@ const UserForm = ({ initialData = null, onSuccess }) => {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
       company_id: (value) => (!value ? 'Please select a company' : null),
       role_id: (value) => (!value ? 'Please select a role' : null),
-      password: (value, values) => 
+      password: (value, values) =>
         (!initialData && !value ? 'Password is required for new users' : null),
     },
   });
@@ -74,10 +104,10 @@ const UserForm = ({ initialData = null, onSuccess }) => {
       }
       onSuccess?.();
     } catch (error) {
-      notifications.show({ 
-        title: 'Error', 
-        message: error.response?.data?.message || 'Operation failed', 
-        color: 'red' 
+      notifications.show({
+        title: 'Error',
+        message: error.response?.data?.message || 'Operation failed',
+        color: 'red'
       });
     }
   };
@@ -85,8 +115,8 @@ const UserForm = ({ initialData = null, onSuccess }) => {
   return (
     <Container size="sm">
       <Card withBorder shadow="md" p={30} radius="md" pos="relative">
-        <LoadingOverlay visible={loadingCompanies || loadingRoles} />
-        
+        <LoadingOverlay visible={loadingCompanies || loadingRoles || loadingUser} />
+
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Group justify="center" mb="md">
             <Avatar size={120} radius={120} src={imagePreview} />
@@ -129,12 +159,12 @@ const UserForm = ({ initialData = null, onSuccess }) => {
 
           <TextInput label="Full Name" placeholder="John Doe" mt="md" {...form.getInputProps('name')} required />
           <TextInput label="Email" placeholder="john@example.com" mt="md" {...form.getInputProps('email')} required />
-          
-          <PasswordInput 
-            label="Password" 
-            placeholder={initialData ? "Leave blank to keep current" : "Secure password"} 
-            mt="md" 
-            {...form.getInputProps('password')} 
+
+          <PasswordInput
+            label="Password"
+            placeholder={initialData ? "Leave blank to keep current" : "Secure password"}
+            mt="md"
+            {...form.getInputProps('password')}
           />
 
           <Button fullWidth mt="xl" type="submit" loading={createUser.isPending || updateUser.isPending}>

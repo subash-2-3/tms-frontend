@@ -1,8 +1,10 @@
 import axios from 'axios';
 import useAuthStore from '../store/authStore';
 
+export const BASE_URL = 'http://localhost:3000'; // Export base URL for images
+
 const apiClient = axios.create({
-  baseURL: 'http://localhost:3000/api', // Match your backend port
+  baseURL: `${BASE_URL}/api`, // Match your backend port
   headers: {
     'Content-Type': 'application/json',
   },
@@ -16,12 +18,12 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     // If we are sending FormData (for images), let the browser set the Content-Type
     if (config.data instanceof FormData) {
       delete config.headers['Content-Type'];
     }
-    
+
     return config;
   },
   (error) => Promise.reject(error)

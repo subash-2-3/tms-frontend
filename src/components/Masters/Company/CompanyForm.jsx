@@ -4,8 +4,21 @@ import { useState, useEffect } from 'react';
 import { useCreateCompany, useUpdateCompany } from '../../../hooks/useCompany';
 import { notifications } from '@mantine/notifications';
 
+import { BASE_URL } from '../../../services/api';
+
+const getImageUrl = (path) => {
+  if (!path) return null;
+  const strPath = String(path).trim();
+  if (strPath.startsWith('data:')) {
+    return strPath.replace(/\s/g, '');
+  }
+  if (strPath.startsWith('http') || strPath.startsWith('blob:')) return strPath;
+  const relativePath = strPath.startsWith('/') ? strPath.slice(1) : strPath;
+  return `${BASE_URL}/${relativePath}`;
+};
+
 const CompanyForm = ({ initialData = null, onSuccess }) => {
-  const [logoPreview, setLogoPreview] = useState(initialData?.company_logo || null);
+  const [logoPreview, setLogoPreview] = useState(getImageUrl(initialData?.company_logo));
   const createCompany = useCreateCompany();
   const updateCompany = useUpdateCompany();
 
@@ -29,7 +42,7 @@ const CompanyForm = ({ initialData = null, onSuccess }) => {
     formData.append('email', values.email);
     formData.append('phone', values.phone || '');
     formData.append('address', values.address || '');
-    
+
     if (values.company_logo) {
       formData.append('company_logo', values.company_logo);
     }

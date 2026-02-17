@@ -13,6 +13,7 @@ import Dashboard from './pages/Dashboard';
 import CompanyPage from './pages/CompanyPage';
 import UserPage from './pages/UserPage';
 import RolePage from './pages/RolePage'; // Ensure this file exists or create a placeholder
+import ProjectPage from './pages/ProjectPage';
 
 // --- Configuration ---
 const queryClient = new QueryClient({
@@ -56,7 +57,8 @@ function App() {
                       <Route path="companies" element={<CompanyPage />} />
                       <Route path="users" element={<UserPage />} />
                       <Route path="roles" element={<RolePage />} />
-                      
+                      <Route path="projects" element={<ProjectPage />} />
+
                       {/* Default Redirect */}
                       <Route path="*" element={<Navigate to="/dashboard" replace />} />
                     </Routes>

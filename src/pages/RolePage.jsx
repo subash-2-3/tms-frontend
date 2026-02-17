@@ -60,7 +60,11 @@ const RolePage = () => {
           </Tabs.Panel>
 
           <Tabs.Panel value="form">
-            <RoleForm initialData={editingRole} onSuccess={() => { setEditingRole(null); setActiveTab('list'); }} />
+            <RoleForm
+              key={editingRole ? editingRole.id : 'create'}
+              initialData={editingRole}
+              onSuccess={() => { setEditingRole(null); setActiveTab('list'); }}
+            />
           </Tabs.Panel>
         </Tabs>
       </Paper>

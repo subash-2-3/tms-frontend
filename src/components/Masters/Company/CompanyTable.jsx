@@ -3,9 +3,23 @@ import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { useCompanies, useDeleteCompany } from '../../../hooks/useCompany';
 import { notifications } from '@mantine/notifications';
 
+import { BASE_URL } from '../../../services/api';
+
+const getImageUrl = (path) => {
+  if (!path) return null;
+  const strPath = String(path).trim();
+  if (strPath.startsWith('data:')) {
+    return strPath.replace(/\s/g, '');
+  }
+  if (strPath.startsWith('http') || strPath.startsWith('blob:')) return strPath;
+  const relativePath = strPath.startsWith('/') ? strPath.slice(1) : strPath;
+  return `${BASE_URL}/${relativePath}`;
+};
+
 const CompanyTable = ({ onEdit }) => {
   const { data: companies, isLoading, isError } = useCompanies();
   const deleteCompany = useDeleteCompany();
+
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this company?')) {
@@ -38,7 +52,7 @@ const CompanyTable = ({ onEdit }) => {
             <Table.Tr key={item.id}>
               <Table.Td>
                 <Group gap="sm">
-                  <Avatar src={item.company_logo} size={40} radius="md" />
+                  <Avatar src={getImageUrl(item.company_logo)} size={40} radius="md" />
                   <Text size="sm" fw={500}>{item.name}</Text>
                 </Group>
               </Table.Td>
@@ -54,9 +68,9 @@ const CompanyTable = ({ onEdit }) => {
                   <ActionIcon variant="subtle" color="blue" onClick={() => onEdit(item)}>
                     <IconEdit size={16} />
                   </ActionIcon>
-                  <ActionIcon 
-                    variant="subtle" 
-                    color="red" 
+                  <ActionIcon
+                    variant="subtle"
+                    color="red"
                     onClick={() => handleDelete(item.id)}
                     loading={deleteCompany.isPending}
                   >
